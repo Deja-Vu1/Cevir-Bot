@@ -74,7 +74,7 @@ async def ara(ctx,dil=''):
                                         await ctx.message.channel.send("{0}, Language : {1}".format(ctx.message.author.mention,i),delete_after=15.0)
                                         await ctx.message.delete()
                         if chk == 0:
-                                await ctx.message.channel.send("{0}, Ops! I didn't find your search".format(ctx.message.author.mention),delete_after=5.0)
+                                await ctx.message.channel.send("{0}, Ops! I didn't find your search - Aramanı bulamadım".format(ctx.message.author.mention),delete_after=5.0)
                                 await ctx.message.delete()
                                 
                 else:
@@ -95,7 +95,7 @@ async def search(ctx,dil=''):
                                         await ctx.message.channel.send("{0}, Language : {1}".format(ctx.message.author.mention,i),delete_after=15.0)
                                         await ctx.message.delete()
                         if chk == 0:
-                               await ctx.message.channel.send("{0}, Ops! I didn't find your search".format(ctx.message.author.mention),delete_after=5.0)
+                               await ctx.message.channel.send("{0}, Ops! I didn't find your search - Aramanı bulamadım".format(ctx.message.author.mention),delete_after=5.0)
                                await ctx.message.delete()
                                 
                 else:
@@ -105,6 +105,8 @@ async def search(ctx,dil=''):
 @bot.command()
 async def cevir(ctx,çevir='',dest=''):
 
+        dest = dest.lower()
+
         if str(ctx.message.channel.type) == "private":
                 await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
         else:
@@ -137,12 +139,14 @@ async def cevir(ctx,çevir='',dest=''):
                                         await ctx.message.channel.send("{0.author.mention}, Ops!\nwrite enter valid language - geçerli bir dil girin".format(ctx.message),delete_after=5.0)
                                         await ctx.message.delete()
                 else:
-                        await ctx.message.channel.send("{0.author.mention}, Ops!\nwrite what you will translate".format(ctx.message),delete_after=5.0)
+                        await ctx.message.channel.send("{0.author.mention}, Ops!\nwrite what you will translate - Neyi çevireceğini yaz...".format(ctx.message),delete_after=5.0)
                         await ctx.message.delete()
 
 @bot.command()
 async def translate(ctx,çevir='',dest=''):
 
+        dest = dest.lower()
+
         if str(ctx.message.channel.type) == "private":
                 await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
         else:
@@ -175,7 +179,7 @@ async def translate(ctx,çevir='',dest=''):
                                         await ctx.message.channel.send("{0.author.mention}, Ops!\nwrite enter valid language - geçerli bir dil girin".format(ctx.message),delete_after=5.0)
                                         await ctx.message.delete()
                 else:
-                        await ctx.message.channel.send("{0.author.mention}, Ops!\nwrite what you will translate".format(ctx.message),delete_after=5.0)
+                        await ctx.message.channel.send("{0.author.mention}, Ops!\nwrite what you will translate - Neyi çevireceğini yaz...".format(ctx.message),delete_after=5.0)
                         await ctx.message.delete()
 
 @bot.command()
@@ -200,8 +204,8 @@ _**COMMANDS**_
 ```Bulunduğunuz yere dilin kısaltmasını gönderir - Sends the abbreviation of the language to your location```
 :partying_face::partying_face::partying_face:
 """.format(ctx.message.author.mention))
-                await ctx.message.delete()
                 await ctx.message.channel.send("{0} ,Sended dm to you for commands - Dm kutunuza komutlar gönderildi".format(ctx.message.author.mention),delete_after=5.0)
+                await ctx.message.delete()
 
 @bot.command()
 async def help(ctx):
@@ -225,8 +229,8 @@ _**COMMANDS**_
 ```Bulunduğunuz yere dilin kısaltmasını gönderir - Sends the abbreviation of the language to your location```
 :partying_face::partying_face::partying_face:
 """.format(ctx.message.author.mention))
-                await ctx.message.delete()
                 await ctx.message.channel.send("{0} ,Sended dm to you for commands - Dm kutunuza komutlar gönderildi".format(ctx.message.author.mention),delete_after=5.0)
+                await ctx.message.delete()
 
 @bot.event
 async def on_ready():
