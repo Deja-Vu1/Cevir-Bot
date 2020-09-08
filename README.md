@@ -68,14 +68,18 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 </summary>
 
 **>translate** _"A Word To Translate - Çevrilecek Olan Kelime" "Destination Language (default english) - Hedef Dil (Varsayılan ingilizce)"_
+
 ```Yazdığınız kelimeyi hedef dile göre çevirir - Translates your typed word according to the target language``` _Aliases: 'trans', 'cevir', 'translater'_
 
 **>langs**
+
 ```Dm kutunuza dilleri gönderir - sends languages to your dm box``` _Aliases: 'languages', 'dil', 'diller'_
 
 **>search** _"dillerin kısaltmalarını arayın - Search for abbreviations of languages"_
+
 ```Bulunduğunuz yere dilin kısaltmasını gönderir - Sends the abbreviation of the language to your location``` _Aliases: 'aramak', 'arat', 'ara'_
 
 **>tdk** _"Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk"_
+
 ```Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk``` _Aliases: 'kelime', 'ogren'_
 </details>
