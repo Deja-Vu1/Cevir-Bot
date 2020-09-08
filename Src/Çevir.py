@@ -136,8 +136,9 @@ async def yardim(ctx):
         if str(ctx.message.channel.type) == "private":
                 await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
         else:
-                channel = await ctx.message.author.create_dm()
-                await channel.send("""
+                try:
+                        channel = await ctx.message.author.create_dm()
+                        await channel.send("""
 {0}
 :partying_face::partying_face::partying_face:
 _**COMMANDS**_
@@ -155,8 +156,10 @@ _**COMMANDS**_
 ```Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk```
 :partying_face::partying_face::partying_face:
 """.format(ctx.message.author.mention))
-                await ctx.message.channel.send("{0} ,Sended dm to you for commands - Dm kutunuza komutlar gönderildi".format(ctx.message.author.mention),delete_after=5.0)
-                await ctx.message.delete()
+                        await ctx.message.channel.send("{0} ,Sended dm to you for commands - Dm kutunuza komutlar gönderildi".format(ctx.message.author.mention),delete_after=5.0)
+                        await ctx.message.delete()
+                except:
+                        await ctx.message.channel.send("{0} ,I can't send dm to you - Sana dm gönderemiyorum".format(ctx.message.author.mention),delete_after=15.0)
 
 @bot.event
 async def on_ready():
