@@ -1,2 +1,3 @@
 discord.py==1.4.1
 googletrans==3.0.0
+tdk-search==1.0.1
