@@ -7,6 +7,9 @@ import googletrans
 from discord.ext import tasks
 import asyncio
 import time
+from bs4 import BeautifulSoup
+import requests
+import lxml
 
 perfix = ">"
 bot = commands.Bot(command_prefix=perfix)
@@ -59,10 +62,8 @@ async def ara(ctx,dil=''):
                         await ctx.message.delete()
                         await ctx.message.channel.send("{0}, Please type language - Lütfen dil yazınız".format(ctx.message.author.mention),delete_after=5.0)
 
-@bot.command(aliases=['clean'])
+@bot.command(aliases=['clean','silsüpür'])
 async def purge(ctx):
-        print(ctx.message.author.guild_permissions)
-        print(dir(ctx.message.author.guild_permissions))
         if ctx.message.author.guild_permissions.administrator:          # if you are administrator
                 await ctx.message.channel.purge()
         else:
@@ -130,6 +131,24 @@ async def tdk(ctx,kelime=''):
                 else:
                         await ctx.message.channel.send("{0}, Ops! I didn't find your search - Aramanı bulamadım".format(ctx.message.author.mention),delete_after=5.0)
                         await ctx.message.delete()
+                        
+@bot.command(aliases=['gazete', 'resmi','haber'])
+async def resmigazete(ctx):
+        r = requests.get('https://www.resmigazete.gov.tr/')
+        source = BeautifulSoup(r.content,"lxml")
+        link = source.find("a",attrs={"id":"btnPdfGoruntule"}).get("href")
+        yazi = source.find("div",attrs={"class":"html-subtitle"}).text
+        aciklama2 = ""
+        aciklama = source.find_all("a",attrs={"data-modal":"True"},limit=10)
+        linka = source.find_all("a",attrs={"data-modal":"True"},limit=10)
+        for i in range(len(aciklama)):
+                aciklama2 += aciklama[i].text[0:len(aciklama[i].text)-15] + "[" + aciklama[i].text[len(aciklama[i].text)-15:len(aciklama[i].text)] + "](" + str(linka[i].get("href")) + ")\n\n"
+        description = "[RESMİ GAZETE SON BASIM](" + str(link) + ")\n\n**" + yazi + "**\n\n" + aciklama2
+        embed = discord.Embed(title="**RESMİ HABER**", colour=discord.Colour(0x3b8ff0), description=description)   # Please check this link (https://discordjs.guide/popular-topics/embeds.html#embed-preview)
+        embed.set_footer(text="Made by DejaVu#4515")
+        embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
+        embed.set_thumbnail(url=ctx.message.author.avatar_url)
+        await ctx.message.channel.send(embed=embed,delete_after=60.0)
 
 @bot.command(aliases=['help', 'helps'])
 async def yardim(ctx):
@@ -145,21 +164,24 @@ _**COMMANDS**_
 
 **>cevir** _"A Word To Translate - Çevrilecek Olan Kelime" "Destination Language (default english) - Hedef Dil (Varsayılan ingilizce)"_
 **>translate** _"A Word To Translate - Çevrilecek Olan Kelime" "Destination Language (default english) - Hedef Dil (Varsayılan ingilizce)"_
-```Yazdığınız kelimeyi hedef dile göre çevirir - Translates your typed word according to the target language```
+```Yazdığınız kelimeyi hedef dile göre çevirir - Translates your typed word according to the target language``` Aliases: 'trans', 'cevir', 'translater'
 **>diller**
 **>langs**
-```Dm kutunuza dilleri gönderir - sends languages ​​to your dm box```
+```Dm kutunuza dilleri gönderir - sends languages ​​to your dm box``` Aliases: 'languages', 'dil', 'diller'
 **>ara** _"dillerin kısaltmalarını arayın - Search for abbreviations of languages"_
 **>search** _"dillerin kısaltmalarını arayın - Search for abbreviations of languages"_
-```Bulunduğunuz yere dilin kısaltmasını gönderir - Sends the abbreviation of the language to your location```
+```Bulunduğunuz yere dilin kısaltmasını gönderir - Sends the abbreviation of the language to your location``` Aliases: 'aramak', 'arat', 'ara'
 **>tdk** _"Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk"_
-```Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk```
+```Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk``` Aliases: 'kelime', 'ogren'
+**>haber _"Resmi gaztenin güncel halini gösterir - Shows the current state of the official newspaper"_
+```Resmi gaztenin güncel halini gösterir - Shows the current state of the official newspaper``` Aliases: 'gazete', 'resmi','haber'
 :partying_face::partying_face::partying_face:
 """.format(ctx.message.author.mention))
                         await ctx.message.channel.send("{0} ,Sended dm to you for commands - Dm kutunuza komutlar gönderildi".format(ctx.message.author.mention),delete_after=5.0)
                         await ctx.message.delete()
                 except:
                         await ctx.message.channel.send("{0} ,I can't send dm to you - Sana dm gönderemiyorum".format(ctx.message.author.mention),delete_after=15.0)
+
 
 @bot.event
 async def on_ready():
