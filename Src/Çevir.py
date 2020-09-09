@@ -134,21 +134,24 @@ async def tdk(ctx,kelime=''):
                         
 @bot.command(aliases=['gazete', 'resmi','haber'])
 async def resmigazete(ctx):
-        r = requests.get('https://www.resmigazete.gov.tr/')
-        source = BeautifulSoup(r.content,"lxml")
-        link = source.find("a",attrs={"id":"btnPdfGoruntule"}).get("href")
-        yazi = source.find("div",attrs={"class":"html-subtitle"}).text
-        aciklama2 = ""
-        aciklama = source.find_all("a",attrs={"data-modal":"True"},limit=10)
-        linka = source.find_all("a",attrs={"data-modal":"True"},limit=10)
-        for i in range(len(aciklama)):
-                aciklama2 += aciklama[i].text[0:len(aciklama[i].text)-15] + "[" + aciklama[i].text[len(aciklama[i].text)-15:len(aciklama[i].text)] + "](" + str(linka[i].get("href")) + ")\n\n"
-        description = "[RESMİ GAZETE SON BASIM](" + str(link) + ")\n\n**" + yazi + "**\n\n" + aciklama2
-        embed = discord.Embed(title="**RESMİ HABER**", colour=discord.Colour(0x3b8ff0), description=description)   # Please check this link (https://discordjs.guide/popular-topics/embeds.html#embed-preview)
-        embed.set_footer(text="Made by DejaVu#4515")
-        embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
-        embed.set_thumbnail(url=ctx.message.author.avatar_url)
-        await ctx.message.channel.send(embed=embed,delete_after=60.0)
+        if str(ctx.message.channel.type) == "private":
+                await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
+        else:
+                r = requests.get('https://www.resmigazete.gov.tr/')
+                source = BeautifulSoup(r.content,"lxml")
+                link = source.find("a",attrs={"id":"btnPdfGoruntule"}).get("href")
+                yazi = source.find("div",attrs={"class":"html-subtitle"}).text
+                aciklama2 = ""
+                aciklama = source.find_all("a",attrs={"data-modal":"True"},limit=10)
+                linka = source.find_all("a",attrs={"data-modal":"True"},limit=10)
+                for i in range(len(aciklama)):
+                        aciklama2 += aciklama[i].text[0:len(aciklama[i].text)-15] + "[" + aciklama[i].text[len(aciklama[i].text)-15:len(aciklama[i].text)] + "](" + str(linka[i].get("href")) + ")\n\n"
+                description = "[RESMİ GAZETE SON BASIM](" + str(link) + ")\n\n**" + yazi + "**\n\n" + aciklama2
+                embed = discord.Embed(title="**RESMİ HABER**", colour=discord.Colour(0x3b8ff0), description=description)   # Please check this link (https://discordjs.guide/popular-topics/embeds.html#embed-preview)
+                embed.set_footer(text="Made by DejaVu#4515")
+                embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
+                embed.set_thumbnail(url=ctx.message.author.avatar_url)
+                await ctx.message.channel.send(embed=embed,delete_after=60.0)
 
 @bot.command(aliases=['help', 'helps'])
 async def yardim(ctx):
@@ -163,17 +166,15 @@ async def yardim(ctx):
 _**COMMANDS**_
 
 **>cevir** _"A Word To Translate - Çevrilecek Olan Kelime" "Destination Language (default english) - Hedef Dil (Varsayılan ingilizce)"_
-**>translate** _"A Word To Translate - Çevrilecek Olan Kelime" "Destination Language (default english) - Hedef Dil (Varsayılan ingilizce)"_
-```Yazdığınız kelimeyi hedef dile göre çevirir - Translates your typed word according to the target language``` Aliases: 'trans', 'cevir', 'translater'
+
+```Yazdığınız kelimeyi hedef dile göre çevirir - Translates your typed word according to the target language``` Aliases: 'trans', 'cevir', 'translater' , 'translate'
 **>diller**
-**>langs**
-```Dm kutunuza dilleri gönderir - sends languages ​​to your dm box``` Aliases: 'languages', 'dil', 'diller'
+```Dm kutunuza dilleri gönderir - sends languages ​​to your dm box``` Aliases: 'languages', 'dil', 'diller', 'langs'
 **>ara** _"dillerin kısaltmalarını arayın - Search for abbreviations of languages"_
-**>search** _"dillerin kısaltmalarını arayın - Search for abbreviations of languages"_
-```Bulunduğunuz yere dilin kısaltmasını gönderir - Sends the abbreviation of the language to your location``` Aliases: 'aramak', 'arat', 'ara'
+```Bulunduğunuz yere dilin kısaltmasını gönderir - Sends the abbreviation of the language to your location``` Aliases: 'aramak', 'arat', 'ara', 'search'
 **>tdk** _"Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk"_
 ```Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk``` Aliases: 'kelime', 'ogren'
-**>haber _"Resmi gaztenin güncel halini gösterir - Shows the current state of the official newspaper"_
+**>haber** _"Resmi gaztenin güncel halini gösterir - Shows the current state of the official newspaper"_
 ```Resmi gaztenin güncel halini gösterir - Shows the current state of the official newspaper``` Aliases: 'gazete', 'resmi','haber'
 :partying_face::partying_face::partying_face:
 """.format(ctx.message.author.mention))
