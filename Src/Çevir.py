@@ -65,14 +65,18 @@ async def ara(ctx,dil=''):
 
 @bot.command(aliases=['clean','silsüpür'])
 async def purge(ctx,limit=''):
-    if ctx.message.author.guild_permissions.administrator:          # if you are administrator
-        if limit != "":
-            await ctx.message.channel.purge(limit=int(limit))
-        else:
-            await ctx.message.channel.purge()
+    if str(ctx.message.channel.type) == "private":
+        await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
     else:
-        await ctx.message.channel.send("{0.author.mention}, şşş! kimse görmesin\nbu komudu kullanmamalısın".format(ctx.message),delete_after=5.0)
-        await ctx.message.delete()
+
+        if ctx.message.author.guild_permissions.administrator:          # if you are administrator
+            if limit != "":
+                await ctx.message.channel.purge(limit=int(limit))
+            else:
+                await ctx.message.channel.purge()
+        else:
+            await ctx.message.channel.send("{0.author.mention}, şşş! kimse görmesin\nbu komudu kullanmamalısın".format(ctx.message),delete_after=5.0)
+            await ctx.message.delete()
 
 @bot.command()
 async def sifir(ctx,mess=''):
