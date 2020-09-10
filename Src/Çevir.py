@@ -75,7 +75,7 @@ async def purge(ctx,limit=''):
         await ctx.message.delete()
 
 @bot.command()
-async def sıfır(ctx,mess=''):
+async def sifir(ctx,mess=''):
     global chk
     if str(ctx.message.channel.type) == "private":
         await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
