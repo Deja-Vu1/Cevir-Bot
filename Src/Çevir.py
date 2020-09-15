@@ -7,18 +7,16 @@ from bs4 import BeautifulSoup
 import requests
 from docx import Document
 from docx.shared import Inches
+import pytz
+from pytz import timezone
+from datetime import datetime
 # This bot doing anything :D, Made by love <3
 
 PERFIX = ">"
 bot = commands.Bot(command_prefix=PERFIX)
 bot.remove_command('help')
 chk = 0
-
-@tasks.loop(minutes=5.0)
-async def func1():
-    await bot.change_presence(
-        activity=discord.Game(
-            name=">yardim & >help | 🌐 " + str(len(bot.guilds)) + " servers | Made by DejaVu#4515\n"))
+adminid = thisisyourid # please write int
 
 
 @bot.command(aliases=['langs', 'languages', 'dil'])
@@ -227,44 +225,85 @@ async def resmigazete(ctx):
             embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
             embed.set_thumbnail(url=ctx.message.author.avatar_url)
             await ctx.message.channel.send(embed=embed,delete_after=60.0)
-           
-@bot.command(aliases=['help', 'helps'])
+
+@bot.command(pass_context = True)
+async def kick(ctx, member: discord.Member, reason=None):
+    if ctx.message.author.guild_permissions.kick_members:
+        try:
+            await member.kick(reason=reason)
+            a = await ctx.message.channel.send("{0}; Done, kicked **{1}!** - Bitti, **{1} atıldı!**".format(ctx.message.author.mention,str(member)))
+            await a.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+        except:
+            a = await ctx.message.channel.send("{0} ,You **can't** use that! - Bunu kullanamazsın! çünkü ondan **üstün değilsin**".format(ctx.message.author.mention))
+            await a.add_reaction("🚫")
+    else:
+        try:
+            await ctx.message.add_reaction("🚫")
+        except:
+            a = await ctx.message.channel.send("{0} ,You **can't** use that! - Bunu **kullanamazsın**!".format(ctx.message.author.mention))
+            await a.add_reaction("🚫")
+
+
+@bot.command(aliases=['help'])
 async def yardim(ctx):
+
     if str(ctx.message.channel.type) == "private":
         await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
     else:
-        try:
-            channel = await ctx.message.author.create_dm()
-            await channel.send("""
-{0}
-:partying_face::partying_face::partying_face:
-_**COMMANDS**_
+        if ctx.message.content.startswith('>help') != True:
+            try:
+                utc_now = datetime.utcnow()
+                utc = pytz.timezone('UTC')
+                aware_date = utc.localize(utc_now)
+                turkey = timezone('Europe/Istanbul')
+                now_turkey = aware_date.astimezone(turkey)
+                
+                channel = await ctx.message.author.create_dm()
+                embed = discord.Embed(title="Efsanevi Komutlarımız", colour=discord.Colour(0xd9b988), url="https://discordapp.com", description="Öncelikle, [botun](https://github.com/Deja-Vu1/Cevir-Bot) nasıl işlediğiniz merak ediyorsanız\n")
+                embed.set_thumbnail(url=ctx.message.author.avatar_url)
+                embed.set_author(name=str(ctx.message.author.name), icon_url=ctx.message.author.avatar_url)
+                embed.set_footer(text="Made by DejaVu#4515 | {0}".format(str(now_turkey)[0:19]),icon_url="https://cdn.discordapp.com/avatars/596455467585110016/b96ac044a4382f62ad36637c6021ef80.png?size=128")
 
-**>cevir** _"A Word To Translate - Çevrilecek Olan Kelime" "Destination Language (default english) - Hedef Dil (Varsayılan ingilizce)"_
+                embed.add_field(name="<:pencil:753955136824541215>", value="**>cevir** ``<text> <languag>``\nDilediğiniz en saçma şeyi bile çevirebilir...\n||öyle, değil mi?||", inline=True)
+                embed.add_field(name="<:scroll:753956027983986688>", value="**>tdk** ``<word>``\nBilmemek değil öğrenmemek ayıp, _kelimeyi yaz anlamını bul!_", inline=True)
+                embed.add_field(name="<:loudspeaker:753960791476142102>", value="**>haber**\nResmi gazeteyi önüne getir!\n_ilk 10 madde ||eğer çok uzunsa ilk 5||_", inline=True)
+                embed.add_field(name="<:clipboard:753958902357295124>", value="**>docx** ``'tBaşlık|lsıralımadde|msırasızmadde|tparagraf'``\nSizin için not tutan bir asistanınız olsun ister miydiniz?\nNasıl kullanacağını öğren yazılarını online .docx'a çevir\n**-t :** 'text' paragraf ekler\n**-h :** 'heading' başlık ekler\n**-l :** 'list' sıralı madde ekler\n**-m :** 'madde' sırasız madde ekler ||hepsi ingilizce, bu neden türkçe :)||", inline=False)
+                
 
-```Yazdığınız kelimeyi hedef dile göre çevirir - Translates your typed word according to the target language``` Aliases: 'trans', 'cevir', 'translater' , 'translate'
-**>diller**
-```Dm kutunuza dilleri gönderir - sends languages ​​to your dm box``` Aliases: 'languages', 'dil', 'diller', 'langs'
-**>ara** _"dillerin kısaltmalarını arayın - Search for abbreviations of languages"_
-```Bulunduğunuz yere dilin kısaltmasını gönderir - Sends the abbreviation of the language to your location``` Aliases: 'aramak', 'arat', 'ara', 'search'
-**>tdk** _"Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk"_
-```Sözcüklerin anlamlarını tdk'den aratır - Search the meaning of words from tdk``` Aliases: 'kelime', 'ogren'
-**>haber** _"Resmi gaztenin güncel halini gösterir - Shows the current state of the official newspaper"_
-```Resmi gaztenin güncel halini gösterir - Shows the current state of the official newspaper``` Aliases: 'gazete', 'resmi','haber'
-**>docx**
-_"tbaşına t eklediğiniz şeyler normal paragraf olarak eklenir|
-mBaşına m koyduğun şeyler BİRER madde olarak eklenir|
-l Başına l koyduğun şeyler BİRER sıralı madde olarak eklenir|
-h Başına h koyduğunuz şeyler BİRER başlık olarak eklenir"_
 
-EXAMPLE: >docx "hBU BİR BAŞLIK|tİÇİNDEKİLER|lYazılım nasıl yapılır?|lYazılımcı nasıl olunur?"
-P.S : | <-- bu işaret "Alt Gr" + "-" ile yapılır  ,  Tırnak içine aldığınız formatta bir daha tırnak kullanmayınız (tek tırnak hariç)
-```Sizin istediğin gibi bir Docx dosyası oluşturur - Creates a Docx file as you want it``` Aliases: 'doküman','doc','word'
-:partying_face::partying_face::partying_face:
-""".format(ctx.message.author.mention))
-            await ctx.message.channel.send("{0} ,Sended dm to you for commands - Dm kutunuza komutlar gönderildi".format(ctx.message.author.mention),delete_after=5.0)
-        except:
-            await ctx.message.channel.send("{0} ,I can't send dm to you - Sana dm gönderemiyorum".format(ctx.message.author.mention),delete_after=15.0)
+                await channel.send(embed=embed)
+                await ctx.message.channel.send("{0} ,Sended dm to you for commands - Dm kutunuza komutlar gönderildi".format(ctx.message.author.mention),delete_after=5.0)
+                await ctx.message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+            except:
+                a = await ctx.message.channel.send("{0} ,I can't send dm to you - Sana dm gönderemiyorum".format(ctx.message.author.mention))
+                await a.add_reaction("🚫")
+        else:
+            try:
+                utc_now = datetime.utcnow()
+                utc = pytz.timezone('UTC')
+                aware_date = utc.localize(utc_now)
+                turkey = timezone('Europe/Istanbul')
+                now_turkey = aware_date.astimezone(turkey)
+                
+                channel = await ctx.message.author.create_dm()
+                embed = discord.Embed(title="Legendary commands", colour=discord.Colour(0xd9b988), url="https://discordapp.com", description="First of all, if you are wondering how the [bot](https://github.com/Deja-Vu1/Cevir-Bot) works, look here\n")
+                embed.set_thumbnail(url=ctx.message.author.avatar_url)
+                embed.set_author(name=str(ctx.message.author.name), icon_url=ctx.message.author.avatar_url)
+                embed.set_footer(text="Made by DejaVu#4515 | {0}".format(str(now_turkey)[0:19]),icon_url="https://cdn.discordapp.com/avatars/596455467585110016/b96ac044a4382f62ad36637c6021ef80.png?size=128")
+
+                embed.add_field(name="<:pencil:753955136824541215>", value="**>cevir** ``<text> <language>``\nIt can translate even the most ridiculous thing you want...\n||Right?||", inline=True)
+                embed.add_field(name="<:scroll:753956027983986688>", value="**>tdk** ``<word>``\nWrite the word and learn its meaning instantly. _isn't it very good?_", inline=True)
+                embed.add_field(name="<:loudspeaker:753960791476142102>", value="**>haber**\nBring the first 10 articles of the official newspaper in front of you!\n||if 10 items are too long, you can read 5 items||", inline=True)
+                embed.add_field(name="<:clipboard:753958902357295124>", value="**>docx** ``'htitle|ladditemwithnumbers|madditemwithoutnumbers|tparagraph'``\nWould you like to have a note-taking assistant for you?\nLearn how to use convert your articles for write .docx on online\n**-t :** 'text' add paragraph\n**-h :** 'heading' add title\n**-l :** 'list' add item with numbers\n**-m :** 'madde' add item without numbers", inline=False)
+                
+
+
+                await channel.send(embed=embed)
+                await ctx.message.channel.send("{0} ,Sended dm to you for commands - Dm kutunuza komutlar gönderildi".format(ctx.message.author.mention),delete_after=5.0)
+                await ctx.message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+            except:
+                a = await ctx.message.channel.send("{0} ,I can't send dm to you - Sana dm gönderemiyorum".format(ctx.message.author.mention))
+                await a.add_reaction("🚫")
 
 
 @bot.event
@@ -272,6 +311,31 @@ async def on_ready():
     await bot.change_presence(
     activity=discord.Game(
     name=">yardim & >help | 🌐 " + str(len(bot.guilds)) + " servers | Made by DejaVu#4515\n"))
-    func1.start()
+
+@bot.event
+async def on_guild_join(guild):
+    global adminid
+    user = bot.get_user(adminid)
+    embed = discord.Embed(title="**NEW SERVER**", colour=discord.Colour(0x4aff00), description="\n**Members:** " + str(len(guild.members)) + "\n**Banner:** [click](" + str(guild.banner_url) + ")\n**Owner:** " + str(guild.owner) + "\n**Server Id:** " + str(guild.id))   # Please check this link (https://discordjs.guide/popular-topics/embeds.html#embed-preview)
+    embed.set_footer(text="Information Service")
+    embed.set_author(name=guild, icon_url=guild.icon_url)
+    embed.set_thumbnail(url=guild.icon_url)
+    await user.send(embed=embed)
+    await bot.change_presence(
+        activity=discord.Game(
+            name=">yardim & >help | 🌐 " + str(len(bot.guilds)) + " servers | Made by DejaVu#4515\n"))
+
+@bot.event
+async def on_guild_remove(guild):
+    global adminid
+    user = bot.get_user(adminid)
+    embed = discord.Embed(title="**LEAVED**", colour=discord.Colour(0xd0021b), description="\n**Members:** " + str(len(guild.members)) + "\n**Banner:** [click](" + str(guild.banner_url) + ")\n**Owner:** " + str(guild.owner) + "\n**Server Id:** " + str(guild.id))   # Please check this link (https://discordjs.guide/popular-topics/embeds.html#embed-preview)
+    embed.set_footer(text="Information Service")
+    embed.set_author(name=guild, icon_url=guild.icon_url)
+    embed.set_thumbnail(url=guild.icon_url)
+    await user.send(embed=embed)
+    await bot.change_presence(
+        activity=discord.Game(
+            name=">yardim & >help | 🌐 " + str(len(bot.guilds)) + " servers | Made by DejaVu#4515\n"))
 
 bot.run('TOKEN')
