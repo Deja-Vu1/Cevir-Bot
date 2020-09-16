@@ -1,22 +1,22 @@
+from datetime import datetime
 import discord
 from discord.ext import commands
-from googletrans import Translator
-import googletrans
 from discord.ext import tasks
+import googletrans
+from googletrans import Translator
 from bs4 import BeautifulSoup
 import requests
 from docx import Document
-from docx.shared import Inches
 import pytz
 from pytz import timezone
-from datetime import datetime
+
 # This bot doing anything :D, Made by love <3
 
 PERFIX = ">"
 bot = commands.Bot(command_prefix=PERFIX)
 bot.remove_command('help')
 chk = 0
-adminid = thisisyourid # please write int
+ADMINID = 596455467585110016
 
 
 @bot.command(aliases=['langs', 'languages', 'dil'])
@@ -40,26 +40,6 @@ async def diller(ctx):
         await ctx.message.channel.send("{0} ,Sended dm to you for languages - Dm kutunuza diller gönderildi".format(ctx.message.author.mention),delete_after=5.0)
         await ctx.message.delete()
 
-@bot.command(aliases=['aramak', 'arat', 'search'])
-async def ara(ctx,dil=''):
-    if str(ctx.message.channel.type) == "private":
-        await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
-    else:
-        if dil != '':
-            dil = dil.lower()
-            chk = 0
-            for i,j in googletrans.LANGUAGES.items():
-                if dil in j:
-                    chk = 1
-                    await ctx.message.channel.send("{0}, Language : {1}".format(ctx.message.author.mention,i),delete_after=15.0)
-                    await ctx.message.delete()
-                if chk == 0:
-                    await ctx.message.channel.send("{0}, Ops! I didn't find your search - Aramanı bulamadım".format(ctx.message.author.mention),delete_after=5.0)
-                    await ctx.message.delete()
-                                
-        else:
-            await ctx.message.delete()
-            await ctx.message.channel.send("{0}, Please type language - Lütfen dil yazınız".format(ctx.message.author.mention),delete_after=5.0)
 
 @bot.command(aliases=['clean','silsüpür'])
 async def purge(ctx,limit=''):
@@ -267,6 +247,7 @@ async def yardim(ctx):
                 embed.add_field(name="<:pencil:753955136824541215>", value="**>cevir** ``<text> <languag>``\nDilediğiniz en saçma şeyi bile çevirebilir...\n||öyle, değil mi?||", inline=True)
                 embed.add_field(name="<:scroll:753956027983986688>", value="**>tdk** ``<word>``\nBilmemek değil öğrenmemek ayıp, _kelimeyi yaz anlamını bul!_", inline=True)
                 embed.add_field(name="<:loudspeaker:753960791476142102>", value="**>haber**\nResmi gazeteyi önüne getir!\n_ilk 10 madde ||eğer çok uzunsa ilk 5||_", inline=True)
+                embed.add_field(name="<:moneybag:755703070762991696>", value="**>kur**\nYabancı paraların ulusal para cinsinden değerini öğren!", inline=True)
                 embed.add_field(name="<:clipboard:753958902357295124>", value="**>docx** ``'tBaşlık|lsıralımadde|msırasızmadde|tparagraf'``\nSizin için not tutan bir asistanınız olsun ister miydiniz?\nNasıl kullanacağını öğren yazılarını online .docx'a çevir\n**-t :** 'text' paragraf ekler\n**-h :** 'heading' başlık ekler\n**-l :** 'list' sıralı madde ekler\n**-m :** 'madde' sırasız madde ekler ||hepsi ingilizce, bu neden türkçe :)||", inline=False)
                 
 
@@ -306,6 +287,28 @@ async def yardim(ctx):
                 await a.add_reaction("🚫")
 
 
+@bot.command(aliases=['doviz', 'ekonomi'])
+async def kur(ctx):
+    if str(ctx.message.channel.type) == "private":
+        await ctx.message.channel.send("{0} ,Sorry I can't help you - Üzgünüm sana yardım edemem".format(ctx.message.author.mention),delete_after=5.0)
+    else:
+        rsource = requests.get('https://www.bloomberght.com/doviz/dolar')
+        source = BeautifulSoup(rsource.content,"lxml")
+        link = source.find("small",attrs={"data-secid":"USDTRY Curncy"}).text
+        link2 = source.find("small",attrs={"data-secid":"EURTRY Curncy"}).text
+        rsource = requests.get('https://altin.doviz.com/gram-altin')
+        source = BeautifulSoup(rsource.content,"lxml")
+        link3 = source.find("div",attrs={"class":"data"}).find_all("div",attrs={"class":"col"},limit=2)
+        embed = discord.Embed(title="**Döviz**", colour=discord.Colour(0xd9b988))   # Please check this link (https://discordjs.guide/popular-topics/embeds.html#embed-preview)
+        embed.set_footer(text="Döviz Kuru Takip",icon_url=ctx.message.guild.icon_url)
+        embed.set_author(name=ctx.message.author, icon_url=ctx.message.author.avatar_url)
+        embed.set_thumbnail(url=ctx.message.guild.icon_url)
+        embed.add_field(name="<:euro:755699571476398151> _Euro_", value="\n**TRY: ** ``{0}``".format(link2), inline=True)
+        embed.add_field(name="<:dollar:755699571476398151> _Dollar_", value="\n**TRY: ** ``{0}``".format(link), inline=True)
+        embed.add_field(name="<:dvd:755722909514858496> _Gram Altın_", value="\n**Alış: ** ``{0}``     **Satış: ** ``{1}``".format(link3[0].find("span",attrs={"class":"value"}).text,link3[1].find("span",attrs={"class":"value"}).text))
+        await ctx.message.channel.send(ctx.message.author.mention,embed=embed)
+
+
 @bot.event
 async def on_ready():
     await bot.change_presence(
@@ -314,8 +317,8 @@ async def on_ready():
 
 @bot.event
 async def on_guild_join(guild):
-    global adminid
-    user = bot.get_user(adminid)
+    global ADMINID
+    user = bot.get_user(ADMINID)
     embed = discord.Embed(title="**NEW SERVER**", colour=discord.Colour(0x4aff00), description="\n**Members:** " + str(len(guild.members)) + "\n**Banner:** [click](" + str(guild.banner_url) + ")\n**Owner:** " + str(guild.owner) + "\n**Server Id:** " + str(guild.id))   # Please check this link (https://discordjs.guide/popular-topics/embeds.html#embed-preview)
     embed.set_footer(text="Information Service")
     embed.set_author(name=guild, icon_url=guild.icon_url)
@@ -327,8 +330,8 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-    global adminid
-    user = bot.get_user(adminid)
+    global ADMINID
+    user = bot.get_user(ADMINID)
     embed = discord.Embed(title="**LEAVED**", colour=discord.Colour(0xd0021b), description="\n**Members:** " + str(len(guild.members)) + "\n**Banner:** [click](" + str(guild.banner_url) + ")\n**Owner:** " + str(guild.owner) + "\n**Server Id:** " + str(guild.id))   # Please check this link (https://discordjs.guide/popular-topics/embeds.html#embed-preview)
     embed.set_footer(text="Information Service")
     embed.set_author(name=guild, icon_url=guild.icon_url)
