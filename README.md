@@ -46,7 +46,7 @@ First, write own token on file. Run the Src/Cevir.py.
 
 ## Running the tests
 
-if you just want to add it to your server: [Add the Translater](https://discord.com/api/oauth2/authorize?client_id=745642579026247762&permissions=0&scope=bot)
+if you just want to add it to your server: [Add the Translater](https://discord.com/api/oauth2/authorize?client_id=745642579026247762&permissions=8&scope=bot)
 
 ## Built With
 
