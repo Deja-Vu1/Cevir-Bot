@@ -10,7 +10,7 @@ from docx import Document
 import pytz
 from pytz import timezone
 
-# This bot doing anything :D, Made by love <3
+# This bot doing anything :D, Made by love <3 changed!
 
 PERFIX = ">"
 bot = commands.Bot(command_prefix=PERFIX)
